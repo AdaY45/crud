@@ -1,33 +1,72 @@
+import { useEffect } from "react";
+import { NavLink } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import useHttp from "../hooks/use-http";
 import Card from "./Card";
+import { uiActions } from "../store/ui-slice";
+import { usersActions } from "../store/users-slice";
 import styles from "./Users.module.scss";
 
 const Users = () => {
-    const users = [
-        {
-            name: "1White",
-            email: "danilo.bilyi@gmail.com",
-            quatityOfProfiles: 2
+  const { isLoading, error, sendRequest } = useHttp();
+  const auth = useSelector((state) => state.user.auth);
+  const users = useSelector((state) => state.users.users);
+  const profiles = useSelector((state) => state.users.profiles);
+  const dispatch = useDispatch();
+  useEffect(() => {
+    const getUsersData = async () => {
+      const users = await sendRequest({
+        url: `http://localhost:5000/api/users/`,
+        headers: {
+          authorization: `Bearer ${auth}`,
+          "Content-Type": "application/json",
         },
-        {
-            name: "1White",
-            email: "danilo.bilyi@gmail.com",
-            quatityOfProfiles: 2
-        },
-        {
-            name: "1White",
-            email: "danilo.bilyi@gmail.com",
-            quatityOfProfiles: 2
-        },
-    ]
-    return <section className={styles.users}>
-    <h2 className="headline">Users:</h2>
+      });
+      dispatch(usersActions.addUsers(users));
+    };
 
-    <div className={styles.cards}>
-        {users.map(el => (
-            <Card key={el.name} name={el.name} input={[el.email, `${el.quatityOfProfiles} ${el.quatityOfProfiles === 1 ? "profile" : "profiles"}`]}/>
+    const getProfilesData = async (userId) => {
+      const url = `http://localhost:5000/api/profiles/`;
+      const profiles = await sendRequest({
+        url,
+        headers: {
+          authorization: `Bearer ${auth}`,
+        },
+      });
+      dispatch(usersActions.addProfiles(profiles));
+    };
+
+    getProfilesData();
+    getUsersData();
+  }, [dispatch, auth, sendRequest]);
+
+  console.log(profiles);
+  console.log(users);
+
+  return (
+    <section className={styles.users}>
+      <h2 className="headline">Users:</h2>
+      {isLoading && <p>Loading...</p>}
+      <div className={styles.cards}>
+        {users.map((el) => (
+          <NavLink to={`/profile/${el._id}`} className={styles.profile}>
+            <Card
+              key={el._id}
+              id={el._id}
+              name={el.username}
+              input={[
+                el.email,
+                `${
+                  profiles.filter((profile) => profile.owner === el._id).length
+                } profiles`,
+              ]}
+              buttonsShow={false}
+            />
+          </NavLink>
         ))}
-    </div>
-</section>
+      </div>
+    </section>
+  );
 };
 
 export default Users;

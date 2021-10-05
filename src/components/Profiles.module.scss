@@ -1,0 +1,21 @@
+@import "util/variables";
+
+.cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 60px 133px;
+}
+
+.create-btn {
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid #d6d8e7;
+  border-radius: 16px;
+  padding: 37px 30px;
+  width: 320px;
+
+  .text {
+    font-family: $font-family;
+    margin-top: 20px;
+    font-size: 18px;
+  }
+}

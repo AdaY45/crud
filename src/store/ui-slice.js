@@ -5,6 +5,7 @@ const initialState = {
   isEditProfileOpen: false,
   isEditUserOpen: false,
   isAuth: false,
+  isAddNewProfile: false
 };
 
 const uiSlice = createSlice({
@@ -31,6 +32,9 @@ const uiSlice = createSlice({
     authHandler(state, action) {
       state.isAuth = action.payload;
     },
+    addNewProfilePress(state, action) {
+        state.isAddNewProfile = action.payload;
+    }
   },
 });
 

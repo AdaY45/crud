@@ -17,6 +17,7 @@ const SignUp = (props) => {
   // const users = useSelector(state => state.users.users);
   const isAdmin = useSelector((state) => state.ui.isAdmin);
   const [isChecked, setIsChecked] = useState(false);
+  const auth = useSelector(state => state.user.auth);
   const { isLoading, error, sendRequest: sendRequest } = useHttp();
   const [emailExists, setEmailExists] = useState(false);
   const {
@@ -74,11 +75,12 @@ const SignUp = (props) => {
       url: "http://localhost:5000/api/auth/register",
       method: "POST",
       headers: {
+        authorization: `Bearer ${auth}`,
         "Content-Type": "application/json",
       },
       body: {
         username: username,
-        type: isChecked ? "admin" : "default",
+        type: isChecked ? "admin" : "user",
         email: email,
         password: password,
       },
@@ -88,16 +90,16 @@ const SignUp = (props) => {
 
     localStorage.setItem(
       "userData",
-      JSON.stringify({ token: response.token, userId: response.user._id })
+      JSON.stringify({ token: response.token, userId: response.user._id, type: response.user.type })
     );
 
-    dispatch(uiActions.authHandler(true));
+    //dispatch(uiActions.authHandler(true));
 
-    dispatch(uiActions.adminHandler(response.user.type === "admin"));
-    dispatch(userActions.addUser(response.user));
-    dispatch(userActions.addAuth(response.token));
+    // dispatch(uiActions.adminHandler(response.user.type === "admin"));
+    // dispatch(userActions.addUser(response.user));
+    // dispatch(userActions.addAuth(response.token));
 
-    history.push(`/profiles/${response.user._id}`);
+    history.push(`/login`);
     //router.push(`/${response.user._id}`);
   };
 
@@ -109,33 +111,33 @@ const SignUp = (props) => {
 
   return (
     <Fragment>
-      <h2>Create your account</h2>
+      <h2 className={styles.head}>Create your account</h2>
       <form className={styles.form} onSubmit={onSubmit}>
         {emailExists && (
-          <div className={styles.error}>
+          <div className="error">
             User with such email already exists.
           </div>
         )}
         {usernameHasErrors && (
-          <p className={styles.error}>Username should not be empty</p>
+          <p className="error">Username should not be empty</p>
         )}
         <Input
           label="Username"
           input={{ id: "username", type: "text" }}
-          className={styles.input}
+          className={usernameInputStyles}
           onChange={usernameChangeHandler}
           onBlur={usernameBlurHandler}
         />
-        {emailHasErrors && <p className={styles.error}>Email is not valid</p>}
+        {emailHasErrors && <p className="error">Email is not valid</p>}
         <Input
           label="Email"
           input={{ id: "email", type: "text" }}
-          className={styles.input}
+          className={emailInputStyles}
           onChange={emailChangeHandler}
           onBlur={emailBlurHandler}
         />
         {passwordHasErrors && (
-          <p className={styles.error}>
+          <p className="error">
             Password should be between 7 to 15 characters and contain at least
             one numeric digit and a special character.
           </p>
@@ -143,7 +145,7 @@ const SignUp = (props) => {
         <Input
           label="Password"
           input={{ id: "password", type: "password" }}
-          className={styles.input}
+          className={passwordInputStyles}
           onChange={passwordChangeHandler}
           onBlur={passwordBlurHandler}
         />
@@ -161,7 +163,7 @@ const SignUp = (props) => {
 
         <div className={styles.switch}>
           <p className={styles.text}>Already have an account?</p>
-          <NavLink to="/" className={styles["switch-btn"]}>
+          <NavLink to="/" className="switch-btn">
             Sign in
           </NavLink>
         </div>

@@ -1,0 +1,30 @@
+@import "../../util//variables";
+
+.form-control {
+  text-align: left;
+  margin: 5px 0;
+
+  label {
+    color: $label-color;
+    font-size: 18px;
+  }
+
+  input {
+    width: 100%;
+    color: $main-color;
+    border: none;
+    border-bottom: 1px solid $main-color;
+    font-family: $font-family;
+    font-weight: 400;
+    outline: none;
+    margin-bottom: 25px;
+    height: 40px;
+    background-color: transparent;
+    font-size: 20px;
+  }
+
+  .invalid {
+    border-bottom: 1px solid #910404f1;
+    background-color: #ff4b4b46;
+  }
+}

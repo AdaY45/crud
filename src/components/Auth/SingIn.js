@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router";
 import useHttp from "../../hooks/use-http";
 import Input from "../UI/Input/Input";
@@ -15,6 +15,7 @@ const SignIn = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const [error, setError] = useState(false);
+  const isAdmin = useSelector(state => state.ui.isAdmin);
   const [user, setUser] = useState(null);
   const { isLoading, errorMessage, sendRequest } = useHttp();
   const {
@@ -52,20 +53,25 @@ const SignIn = () => {
         password: password,
       },
     });
+    console.log(response)
 
     localStorage.setItem(
       "userData",
-      JSON.stringify({ token: response.token, userId: response.user._id })
+      JSON.stringify({ token: response.token, userId: response.user._id, type: response.user.type, createdAt: response.createdAt })
     );
 
     dispatch(uiActions.authHandler(true));
-
     dispatch(uiActions.adminHandler(response.user.type === "admin"));
     dispatch(userActions.addUser(response.user));
     dispatch(userActions.addAuth(response.token));
 
     // router.push(`/${response.user._id}`);
-    history.push(`/profiles/${response.user._id}`);
+    if(response.user.type === "admin") {
+      history.push(`/profiles/`);
+    } else {
+      history.push(`/profiles/${response.user._id}`);
+    }
+    
   };
 
   const emailInputStyles = emailHasErrors ? "invalid" : "";
@@ -74,21 +80,21 @@ const SignIn = () => {
 
   return (
     <Fragment>
-      <h2>Sign in</h2>
+      <h2 className={styles.head}>Sign in</h2>
       <form className={styles.form} onSubmit={onSubmit}>
         {error && (
-          <div className={styles.error}>Email or password is not valid</div>
+          <div className="error">Email or password is not valid</div>
         )}
-        {emailHasErrors && <p className={styles.error}>Email is not valid</p>}
+        {emailHasErrors && <p className="error">Email is not valid</p>}
         <Input
           label="Email"
           input={{ id: "email", type: "text" }}
-          className={styles.input}
+          className={emailInputStyles}
           onChange={emailChangeHandler}
           onBlur={emailBlurHandler}
         />
         {passwordHasErrors && (
-          <p className={styles.error}>
+          <p className="error">
             Password should be between 7 to 15 characters and contain at least
             one numeric digit and a special character.
           </p>
@@ -96,7 +102,7 @@ const SignIn = () => {
         <Input
           label="Password"
           input={{ id: "username", type: "password" }}
-          className={styles.input}
+          className={passwordInputStyles}
           onChange={passwordChangeHandler}
           onBlur={passwordBlurHandler}
         />
@@ -105,7 +111,7 @@ const SignIn = () => {
 
         <div className={styles.switch}>
           <p className={styles.text}>Don&apos;t have an account?</p>
-          <NavLink to="/signup" className={styles["switch-btn"]}>
+          <NavLink to="/register" className="switch-btn">
             Sign up
           </NavLink>
         </div>

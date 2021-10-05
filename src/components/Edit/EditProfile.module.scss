@@ -1,0 +1,21 @@
+@import "../util//variables";
+
+.form {
+  background: #ffff;
+  margin: 100px 370px;
+  padding: 70px 175px;
+  border: 1px solid #d6d8e7;
+  border-radius: 16px;
+
+  .form-control {
+    color: $label-color;
+  }
+
+  .submit-btn {
+      text-align: center;
+
+      * {
+          margin: 0 10px;
+      }
+  }
+}

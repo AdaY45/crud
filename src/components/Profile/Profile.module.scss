@@ -1,0 +1,23 @@
+@import "../util/variables";
+
+.users-info {
+    text-align: center;
+    color: $main-color;
+
+    div {
+        margin: 10px 0;
+    }
+
+    .text {
+        font-size: 22px;
+    }
+
+    img {
+        margin: 0 10px;
+    }
+
+    button {
+        border: none;
+        background: transparent;
+    }
+}

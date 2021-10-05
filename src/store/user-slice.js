@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialState = { user: {}, profiles: [], auth: "" };
+const initialState = { userId: "", user: {}, profiles: [], auth: "", profile: {} };
 
 const userSlice = createSlice({
     name: "users",
@@ -10,11 +10,17 @@ const userSlice = createSlice({
             state.user = action.payload;
         },
         addProfiles(state, action) {
-            state.profiles = state.profiles.concat(action.payload);
+            state.profiles = action.payload;
         },
         addAuth(state, action) {
             state.auth = action.payload;
-        }
+        },
+        addProfile(state, action) {
+            state.profile = action.payload;
+        },
+        setUserId(state, action){
+            state.userId = action.payload;
+        } 
     }
 });
 

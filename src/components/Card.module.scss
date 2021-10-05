@@ -1,0 +1,57 @@
+@import "util/variables";
+
+.card {
+  //   background-color: #ffff;
+  //   border: 1px solid #d6d8e7;
+  //   border-radius: 16px;
+  //   width: 320px;
+
+  * {
+    text-align: center;
+  }
+
+  .card-info {
+    //padding: 30px 86px;
+    color: $nav-color;
+    padding-bottom: 30px;
+
+    .name {
+      font-weight: 500;
+    }
+  }
+
+  .change {
+    width: 100%;
+
+    .edit,
+    .delete {
+      width: 50%;
+      border: none;
+      background-color: transparent;
+      border: 1px solid #d6d8e7;
+      border-bottom: none;
+      position: absolute;
+      bottom: 0;
+    }
+
+    .edit {
+      border-left: none;
+      left: 0;
+    }
+
+    .delete {
+      border-right: none;
+      right: 0;
+    }
+
+    .edit:hover {
+      background-color: #624af2;
+      border-radius: 0px 0px 0px 16px;
+    }
+
+    .delete:hover {
+      background-color: #eb0055;
+      border-radius: 0px 0px 16px 0px;
+    }
+  }
+}

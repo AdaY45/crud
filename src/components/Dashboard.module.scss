@@ -1,0 +1,19 @@
+.headline {
+  margin-left: 0;
+}
+
+.cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 60px 133px;
+  text-align: center;
+
+  .head {
+    font-size: 22px;
+  }
+
+  .number {
+    font-size: 36px;
+    font-weight: 600;
+  }
+}

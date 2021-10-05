@@ -1,4 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
+import { useState } from "react";
+import { useHistory } from "react-router";
 import reactDom from "react-dom";
 import styles from "./EditProfile.module.scss";
 import Input from "../UI/Input/Input";
@@ -16,7 +18,13 @@ import { userActions } from "../../store/user-slice";
 const EditProfile = (props) => {
   const dispatch = useDispatch();
   const auth = useSelector((state) => state.user.auth);
+  const profile = useSelector((state) => state.user.profile);
+  const user = useSelector(state => state.user.user);
+  const isAdmin = useSelector(state => state.ui.isAdmin);
+  const isAddNewProfile = useSelector((state) => state.ui.isAddNewProfile);
+  const history = useHistory();
   const { isLoading, error, sendRequest } = useHttp();
+  const [selectedGender, setSelectedGender] = useState(null);
   const { id: userId } = useParams();
   const {
     value: name,
@@ -24,12 +32,6 @@ const EditProfile = (props) => {
     hasErrors: nameHasErrors,
     valueChangeHandler: nameChangeHandler,
     inputBlurHandler: nameBlurHandler,
-  } = useInput((value) => value.trim() !== "");
-
-  const {
-    value: gender,
-    isValid: genderIsValid,
-    hasErrors: genderHasErrors,
   } = useInput((value) => value.trim() !== "");
 
   const {
@@ -52,37 +54,69 @@ const EditProfile = (props) => {
     dispatch(uiActions.modalClose("profile"));
   };
 
+  const genderHandler = (event) => {
+    setSelectedGender(event.target.value);
+  };
+
   const submitHandler = async (event) => {
     event.preventDefault();
 
-    if (!nameIsValid && !genderIsValid && !cityIsValid && !birthdateIsValid) {
+    if (!nameIsValid && !cityIsValid && !birthdateIsValid && !selectedGender) {
       return;
     }
 
-    const response = await sendRequest({
-      url: `http://localhost:5000/api/profiles/create`,
-      method: "POST",
+    if (isAddNewProfile) {
+      const response = await sendRequest({
+        url: `http://localhost:5000/api/profiles/create`,
+        method: "POST",
+        headers: {
+          authorization: `Bearer ${auth}`,
+          "Content-Type": "application/json",
+        },
+        body: {
+          name,
+          gender: selectedGender,
+          birthdate,
+          city,
+        },
+      });
+    } else {
+      const body = {
+        _id: profile._id,
+        name: name ? name : profile.name,
+        gender: selectedGender ? selectedGender : profile.gender,
+        birthdate: birthdate ? birthdate : profile.birthdate,
+        city: city ? city : profile.city,
+      };
+
+      const response = await sendRequest({
+        url: `http://localhost:5000/api/profiles/edit`,
+        method: "PATCH",
+        headers: {
+          authorization: `Bearer ${auth}`,
+          "Content-Type": "application/json",
+        },
+        body: body,
+      });
+    }
+
+    const url = userId
+      ? `http://localhost:5000/api/profiles/${userId}` :
+      user._id ?  `http://localhost:5000/api/profiles/${user._id}`
+      : `http://localhost:5000/api/profiles/`;
+    const profiles = await sendRequest({
+      url,
       headers: {
         authorization: `Bearer ${auth}`,
-        "Content-Type": "application/json",
-      },
-      body: {
-        name,
-        gender,
-        birthdate,
-        city,
       },
     });
-
-    console.log(response);
-
-    //dispatch(userActions.addProfiles(response));
-    dispatch(uiActions.modalClose('profile'));
+    dispatch(userActions.addProfiles(profiles));
+    dispatch(uiActions.modalClose("profile"));
   };
 
-  const nameInputStyles = nameHasErrors ? "invalid" : "";
+  const birthday = new Date(profile.birthdate);
 
-  const genderInputStyles = genderHasErrors ? "invalid" : "";
+  const nameInputStyles = nameHasErrors ? "invalid" : "";
 
   const cityInputStyles = cityHasErrors ? "invalid" : "";
 
@@ -92,47 +126,74 @@ const EditProfile = (props) => {
     <Edit>
       <form className={styles.form} onSubmit={submitHandler}>
         {nameHasErrors && (
-          <div className={styles.error}>The field should not be empty</div>
+          <div className="error">This field should not be empty</div>
         )}
         <Input
           label="name"
           input={{
             id: "name",
             type: "text",
+            defaultValue: !isAddNewProfile ? profile.name : "",
           }}
           onChange={nameChangeHandler}
           onBlur={nameBlurHandler}
-          className={styles.input}
+          className={nameInputStyles}
         />
-        {genderHasErrors && (
-          <div className={styles.error}>The field should not be empty</div>
-        )}
-        <Checkbox input={["male", "female"]} label="gender" />
+        <div className={styles["form-control"]}>
+          <label htmlFor={props.input}>gender</label>
+          <div className={styles.options}>
+            <input
+              type="radio"
+              name="gender"
+              value="male"
+              className={styles.radio}
+              onChange={genderHandler}
+              defaultChecked={(!isAddNewProfile && profile.gender === "male") || isAddNewProfile}
+            />
+            <label htmlFor="male" className={styles["gender-label"]}>
+              male
+            </label>
+            <input
+              type="radio"
+              name="gender"
+              value="female"
+              className={styles.radio}
+              onChange={genderHandler}
+              defaultChecked={!isAddNewProfile && profile.gender === "female"}
+            />
+            <label htmlFor="female" className={styles["gender-label"]}>
+              female
+            </label>
+          </div>
+        </div>
         {cityHasErrors && (
-          <div className={styles.error}>The field should not be empty</div>
+          <div className="error">The field should not be empty</div>
         )}
         <Input
           label="city"
           input={{
             id: "city",
             type: "text",
+            defaultValue: !isAddNewProfile ? profile.city : "",
           }}
           onChange={cityChangeHandler}
           onBlur={cityBlurHandler}
-          className={styles.input}
+          className={cityInputStyles}
         />
         {birthdateHasErrors && (
-          <div className={styles.error}>The field should not be empty</div>
+          <div className="error">This field should not be empty</div>
         )}
         <Input
           label="birthdate"
           input={{
             id: "birthdate",
-            type: "text",
+            type: "date",
+            max: new Date().toISOString().slice(0, 10),
+            defaultValue: !isAddNewProfile ? `${birthday.getFullYear()}-${String(birthday.getMonth() + 1).padStart(2, '0')}-${String(birthday.getDate()).padStart(2, '0')}` : "",
           }}
           onChange={birthdateChangeHandler}
           onBlur={birthdateBlurHandler}
-          className={styles.input}
+          className={birthdateInputStyles}
         />
         <div className={styles["submit-btn"]}>
           <Button>

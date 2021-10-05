@@ -1,0 +1,29 @@
+@import "../util//variables";
+
+.nav {
+    display: flex;
+
+    .main-nav {
+        display: flex;
+        padding: 20px 0;
+
+        .header-btn {
+            display: flex;
+            text-decoration: none;
+            padding: 0 44px;
+            font-size: 18px;
+
+            div {
+                margin: 0 6px;
+            }
+        }
+    }
+
+    .logout-btn {
+        border: none;
+        background-color:transparent;
+        font-family: $font-family;
+        font-size: 18px;
+        color: $nav-color;
+    }
+}

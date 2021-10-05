@@ -9,12 +9,13 @@ const Layout = (props) => {
     const isEditProfileOpen = useSelector(state => state.ui.isEditProfileOpen);
     const isEditUserOpen = useSelector(state => state.ui.isEditUserOpen);
     const isAuth = useSelector((state) => state.ui.isAuth);
+    const isAddNewProfile = useSelector(state => state.ui.isAddNewProfile);
     return (
         <div className={styles.container}>
           {isEditProfileOpen && <EditProfile />}
           {isEditUserOpen && <EditUser />}
           {isAuth && <Header />}
-          <main className={styles.main}>{props.children}</main>
+          <main className={props.auth ? styles.auth : styles.main}>{props.children}</main>
         </div>
       );
 };

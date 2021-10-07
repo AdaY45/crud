@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const useInput = (validationFunc) => {
+const useInput = (validationFunc, isEdit) => {
   const [enteredValue, setEnteredValue] = useState("");
   const [isTouched, setIsTouched] = useState(false);
 

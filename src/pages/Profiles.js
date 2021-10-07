@@ -3,9 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { uiActions } from "../store/ui-slice";
 import { useParams } from "react-router";
 import { userActions } from "../store/user-slice";
-import { NavLink } from "react-router-dom";
-import Card from "./Card";
-import Edit from "./Edit/Edit";
+import Card from "../components/Card/Card";
 import styles from "./Profiles.module.scss";
 import create from "../imgs/create.svg";
 import useHttp from "../hooks/use-http";
@@ -28,14 +26,14 @@ const Profiles = (props) => {
 
   useEffect(() => {
     const getProfilesData = async (userId) => {
-      // const url = `http://localhost:5000/api/profiles/${user_Id}`;
       const url = userId
         ? `http://localhost:5000/api/profiles/${userId}`
-        : user_Id !== ""
+        : user_Id !== "" && !isAdmin
         ? `http://localhost:5000/api/profiles/${user_Id}`
-        : props.id
-        ? `http://localhost:5000/api/profiles/${props.id}`
+        // : props.id
+        // ? `http://localhost:5000/api/profiles/${props.id}`
         : isAdmin && `http://localhost:5000/api/profiles/`;
+        console.log(url)
       const profiles = await sendRequest({
         url,
         headers: {

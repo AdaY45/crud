@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import styles from "./Dashboard.module.scss";
-import Layout from "./Layouts/Layout";
+import Layout from "../components/Layouts/Layout";
+import Loader from "../components/UI/Loader/Loader";
 import useHttp from "../hooks/use-http";
 
 const Dashboard = () => {
@@ -30,7 +31,7 @@ const Dashboard = () => {
   return (
     <section className={styles.dashboard}>
       <h2 className={styles.headline}>Dashboard:</h2>
-      {isLoading && <p>Loading...</p>}
+      {isLoading && <Loader />}
       {isReady && (
         <div className={styles.cards}>
           <Layout>

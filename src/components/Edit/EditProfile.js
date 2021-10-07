@@ -17,10 +17,12 @@ import { userActions } from "../../store/user-slice";
 
 const EditProfile = (props) => {
   const dispatch = useDispatch();
+  const [isGenderValid, setIsGenderValid] = useState(true);
+  const selectedUserId = useSelector(state => state.user.selectedUserId);
   const auth = useSelector((state) => state.user.auth);
   const profile = useSelector((state) => state.user.profile);
-  const user = useSelector(state => state.user.user);
-  const isAdmin = useSelector(state => state.ui.isAdmin);
+  const user = useSelector((state) => state.user.user);
+  const isAdmin = useSelector((state) => state.ui.isAdmin);
   const isAddNewProfile = useSelector((state) => state.ui.isAddNewProfile);
   const history = useHistory();
   const { isLoading, error, sendRequest } = useHttp();
@@ -61,12 +63,17 @@ const EditProfile = (props) => {
   const submitHandler = async (event) => {
     event.preventDefault();
 
-    if (!nameIsValid && !cityIsValid && !birthdateIsValid && !selectedGender) {
+    if (selectedGender === null) {
+      setIsGenderValid(false);
+      return;
+    }
+
+    if (!nameIsValid && !cityIsValid && !birthdateIsValid) {
       return;
     }
 
     if (isAddNewProfile) {
-      const response = await sendRequest({
+      await sendRequest({
         url: `http://localhost:5000/api/profiles/create`,
         method: "POST",
         headers: {
@@ -78,6 +85,7 @@ const EditProfile = (props) => {
           gender: selectedGender,
           birthdate,
           city,
+          owner: selectedUserId
         },
       });
     } else {
@@ -89,7 +97,7 @@ const EditProfile = (props) => {
         city: city ? city : profile.city,
       };
 
-      const response = await sendRequest({
+      await sendRequest({
         url: `http://localhost:5000/api/profiles/edit`,
         method: "PATCH",
         headers: {
@@ -101,15 +109,21 @@ const EditProfile = (props) => {
     }
 
     const url = userId
-      ? `http://localhost:5000/api/profiles/${userId}` :
-      user._id ?  `http://localhost:5000/api/profiles/${user._id}`
-      : `http://localhost:5000/api/profiles/`;
+      ? `http://localhost:5000/api/profiles/${userId}`
+      : user._id
+      ? `http://localhost:5000/api/profiles/${user._id}`
+      : selectedUserId
+      ? `http://localhost:5000/api/profiles/${selectedUserId}`
+      : isAdmin && `http://localhost:5000/api/profiles/`;
+
     const profiles = await sendRequest({
       url,
       headers: {
         authorization: `Bearer ${auth}`,
       },
     });
+    
+    dispatch(userActions.setSelectedUserId(null));
     dispatch(userActions.addProfiles(profiles));
     dispatch(uiActions.modalClose("profile"));
   };
@@ -136,9 +150,12 @@ const EditProfile = (props) => {
             defaultValue: !isAddNewProfile ? profile.name : "",
           }}
           onChange={nameChangeHandler}
-          onBlur={nameBlurHandler}
+          onBlur={isAddNewProfile && nameBlurHandler}
           className={nameInputStyles}
         />
+        {!isGenderValid && (
+          <div className="error">This field should not be empty</div>
+        )}
         <div className={styles["form-control"]}>
           <label htmlFor={props.input}>gender</label>
           <div className={styles.options}>
@@ -148,7 +165,7 @@ const EditProfile = (props) => {
               value="male"
               className={styles.radio}
               onChange={genderHandler}
-              defaultChecked={(!isAddNewProfile && profile.gender === "male") || isAddNewProfile}
+              defaultChecked={!isAddNewProfile && profile.gender === "male"}
             />
             <label htmlFor="male" className={styles["gender-label"]}>
               male
@@ -177,7 +194,7 @@ const EditProfile = (props) => {
             defaultValue: !isAddNewProfile ? profile.city : "",
           }}
           onChange={cityChangeHandler}
-          onBlur={cityBlurHandler}
+          onBlur={isAddNewProfile && cityBlurHandler}
           className={cityInputStyles}
         />
         {birthdateHasErrors && (
@@ -189,10 +206,17 @@ const EditProfile = (props) => {
             id: "birthdate",
             type: "date",
             max: new Date().toISOString().slice(0, 10),
-            defaultValue: !isAddNewProfile ? `${birthday.getFullYear()}-${String(birthday.getMonth() + 1).padStart(2, '0')}-${String(birthday.getDate()).padStart(2, '0')}` : "",
+            defaultValue: !isAddNewProfile
+              ? `${birthday.getFullYear()}-${String(
+                  birthday.getMonth() + 1
+                ).padStart(2, "0")}-${String(birthday.getDate()).padStart(
+                  2,
+                  "0"
+                )}`
+              : "",
           }}
           onChange={birthdateChangeHandler}
-          onBlur={birthdateBlurHandler}
+          onBlur={isAddNewProfile && birthdateBlurHandler}
           className={birthdateInputStyles}
         />
         <div className={styles["submit-btn"]}>

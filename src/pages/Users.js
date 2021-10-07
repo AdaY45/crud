@@ -2,10 +2,10 @@ import { useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import useHttp from "../hooks/use-http";
-import Card from "./Card";
-import { uiActions } from "../store/ui-slice";
+import Card from "../components/Card/Card";
 import { usersActions } from "../store/users-slice";
 import styles from "./Users.module.scss";
+import Loader from "../components/UI/Loader/Loader";
 
 const Users = () => {
   const { isLoading, error, sendRequest } = useHttp();
@@ -46,7 +46,7 @@ const Users = () => {
   return (
     <section className={styles.users}>
       <h2 className="headline">Users:</h2>
-      {isLoading && <p>Loading...</p>}
+      {isLoading && <Loader />}
       <div className={styles.cards}>
         {users.map((el) => (
           <NavLink to={`/profile/${el._id}`} className={styles.profile}>

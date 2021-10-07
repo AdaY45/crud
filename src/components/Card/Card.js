@@ -1,14 +1,13 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router";
-import { NavLink } from "react-router-dom";
 import styles from "./Card.module.scss";
-import edit from "../imgs/edit.svg";
-import garbage from "../imgs/delete.svg";
-import { uiActions } from "../store/ui-slice";
-import { userActions } from "../store/user-slice";
-import useHttp from "../hooks/use-http";
-import Layout from "./Layouts/Layout";
+import edit from "../../imgs/edit.svg";
+import garbage from "../../imgs/delete.svg";
+import { uiActions } from "../../store/ui-slice";
+import { userActions } from "../../store/user-slice";
+import useHttp from "../../hooks/use-http";
+import Layout from "../Layouts/Layout";
 
 const Card = (props) => {
   const [isHovered, setIsHovered] = useState(false);

@@ -10,14 +10,20 @@ import { uiActions } from "../../store/ui-slice";
 import check from "../../imgs/check.svg";
 import close from "../../imgs/close.svg";
 import useHttp from "../../hooks/use-http";
+import { useParams } from "react-router";
+import { useHistory } from "react-router";
+import { userActions } from "../../store/user-slice";
+import { usersActions } from "../../store/users-slice";
 import styles from "./EditUser.module.scss";
 
 const EditUser = (props) => {
   const dispatch = useDispatch();
   const [isChecked, setIsChecked] = useState(false);
-  const {isLoading,error,sendRequest} = useHttp();
+  const { isLoading, error, sendRequest } = useHttp();
+  const history = useHistory()
   const auth = useSelector((state) => state.user.auth);
   const user = useSelector((state) => state.user.user);
+
   const closeHandler = () => {
     dispatch(uiActions.modalClose("user"));
   };
@@ -45,17 +51,24 @@ const EditUser = (props) => {
   const submitHandler = async (event) => {
     event.preventDefault();
 
-    if (!usernameIsValid && !emailIsValid) {
-      return;
-    }
+    console.log(email, username);
+    console.log(usernameIsValid, emailIsValid);
+
+    // if (!usernameIsValid && !emailIsValid) {
+    //   return;
+    // }
+
     const body = {
       _id: user._id,
-      username: username,
-      email: email,
+      username: username !== '' ? username : user.username,
+      email: email !== '' ? email : user.email,
+      type: isChecked ? "admin" : "user",
     };
 
+    console.log(body);
+
     const response = await sendRequest({
-      url: `http://localhost:5000/api/profiles/edit`,
+      url: `http://localhost:5000/api/users/edit`,
       method: "PATCH",
       headers: {
         authorization: `Bearer ${auth}`,
@@ -63,6 +76,13 @@ const EditUser = (props) => {
       },
       body: body,
     });
+
+    console.log(body);
+
+    dispatch(userActions.addUser(response));
+    dispatch(usersActions.addUser(response));
+    dispatch(uiActions.modalClose("user"));
+    history.push(`/profile/${user._id}`)
   };
 
   const emailInputStyles = emailHasErrors ? "invalid" : "";
@@ -72,6 +92,9 @@ const EditUser = (props) => {
   return reactDom.createPortal(
     <Edit>
       <form className={styles.form} onSubmit={submitHandler}>
+        {usernameHasErrors && (
+          <div className="error">This field should not be empty</div>
+        )}
         <Input
           label="user name"
           input={{
@@ -80,9 +103,11 @@ const EditUser = (props) => {
             defaultValue: user.username,
           }}
           onChange={usernameChangeHandler}
-          onBlur={usernameBlurHandler}
           className={styles.input}
         />
+        {usernameHasErrors && (
+          <div className="error">This field should not be empty</div>
+        )}
         <Input
           label="email"
           input={{
@@ -91,7 +116,6 @@ const EditUser = (props) => {
             defaultValue: user.email,
           }}
           onChange={emailChangeHandler}
-          onBlur={emailBlurHandler}
           className={styles.input}
         />
         <div className={styles["form-control"]}>
@@ -99,7 +123,7 @@ const EditUser = (props) => {
             onChange={adminHandler}
             type="checkbox"
             className={styles.checkbox}
-            defaultChecked={user.type === 'admin'}
+            defaultChecked={user.type === "admin"}
           />
           <label htmlFor="admin">is admin</label>
         </div>

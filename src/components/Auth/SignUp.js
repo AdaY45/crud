@@ -90,7 +90,7 @@ const SignUp = (props) => {
 
     localStorage.setItem(
       "userData",
-      JSON.stringify({ token: response.token, userId: response.user._id, type: response.user.type })
+      JSON.stringify({ token: response.token, userId: response.user._id, username: response.user.username, type: response.user.type })
     );
 
     //dispatch(uiActions.authHandler(true));

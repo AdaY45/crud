@@ -15,7 +15,8 @@ const SignIn = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const [error, setError] = useState(false);
-  const isAdmin = useSelector(state => state.ui.isAdmin);
+  const [isNotAuth, setIsNotAuth] = useState({isNotAuth: false, message: ""});
+  const isAdmin = useSelector((state) => state.ui.isAdmin);
   const [user, setUser] = useState(null);
   const { isLoading, errorMessage, sendRequest } = useHttp();
   const {
@@ -53,25 +54,34 @@ const SignIn = () => {
         password: password,
       },
     });
-    console.log(response)
 
-    localStorage.setItem(
-      "userData",
-      JSON.stringify({ token: response.token, userId: response.user._id, type: response.user.type, createdAt: response.createdAt })
-    );
-
-    dispatch(uiActions.authHandler(true));
-    dispatch(uiActions.adminHandler(response.user.type === "admin"));
-    dispatch(userActions.addUser(response.user));
-    dispatch(userActions.addAuth(response.token));
-
-    // router.push(`/${response.user._id}`);
-    if(response.user.type === "admin") {
-      history.push(`/profiles/`);
+    if (response.hasOwnProperty("errors")) {
+      setError(true);
     } else {
-      history.push(`/profiles/${response.user._id}`);
+      localStorage.setItem(
+        "userData",
+        JSON.stringify({
+          token: response.token,
+          userId: response.user._id,
+          username: response.user.username,
+          type: response.user.type,
+          createdAt: response.createdAt,
+        })
+      );
+
+      dispatch(uiActions.authHandler(true));
+      dispatch(uiActions.adminHandler(response.user.type === "admin"));
+      dispatch(userActions.addUser(response.user));
+      dispatch(userActions.addAuth(response.token));
+      dispatch(userActions.setUsername(response.user.username));
+
+      // router.push(`/${response.user._id}`);
+      if (response.user.type === "admin") {
+        history.push(`/profiles/`);
+      } else {
+        history.push(`/profiles/${response.user._id}`);
+      }
     }
-    
   };
 
   const emailInputStyles = emailHasErrors ? "invalid" : "";
@@ -82,9 +92,8 @@ const SignIn = () => {
     <Fragment>
       <h2 className={styles.head}>Sign in</h2>
       <form className={styles.form} onSubmit={onSubmit}>
-        {error && (
-          <div className="error">Email or password is not valid</div>
-        )}
+        {isNotAuth && <div className="error">{}</div>}
+        {error && <div className="error">Wrong email or password</div>}
         {emailHasErrors && <p className="error">Email is not valid</p>}
         <Input
           label="Email"

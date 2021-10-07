@@ -9,6 +9,11 @@
 
   .form-control {
     color: $label-color;
+
+    .gender-label {
+      color: $main-color;
+      font-size: 20px;
+    }
   }
 
   .submit-btn {

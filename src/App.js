@@ -10,7 +10,6 @@ import { Route } from "react-router";
 import { userActions } from "./store/user-slice";
 import { uiActions } from "./store/ui-slice";
 import MainLayout from "./components/Layouts/MainLayout";
-import styles from "./App.module.scss";
 import { Switch } from "react-router";
 import useHttp from "./hooks/use-http";
 

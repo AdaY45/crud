@@ -11,7 +11,7 @@ import { uiActions } from "../../store/ui-slice";
 import { userActions } from "../../store/user-slice";
 import { useParams } from "react-router";
 
-const User = (props) => {
+const User = () => {
   const { id: userId } = useParams();
   const history = useHistory();
   const profiles = useSelector((state) => state.user.profiles);
@@ -34,7 +34,7 @@ const User = (props) => {
     const user = users.find(user => user._id === userId);
 
     dispatch(userActions.addUser(user));
-    console.log(user)
+    
 
     dispatch(uiActions.modalOpen("user"));
   };
@@ -43,14 +43,6 @@ const User = (props) => {
     const confirmation = window.confirm(
       "Are you sure you want to delete the profile?"
     );
-
-    // const profile = profiles.find(
-    //   (el) =>
-    //     el.name === props.name &&
-    //     el.gender === props.input[0] &&
-    //     msToBirthdate(el.birthdate) === props.input[1] &&
-    //     el.city === props.input[2]
-    // );
 
     if (confirmation) {
       await sendRequest({

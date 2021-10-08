@@ -31,20 +31,21 @@ const Dashboard = () => {
   return (
     <section className={styles.dashboard}>
       <h2 className={styles.headline}>Dashboard:</h2>
+      {error && <div className="error">Something went wrong</div>}
       {isLoading && <Loader />}
       {isReady && (
         <div className={styles.cards}>
           <Layout>
             <div className={styles.head}>Users:</div>
-            <div className={styles.number}>{dashboardData.usersCount}</div>
+            <div className={styles.number} data-testid="users">{dashboardData.usersCount}</div>
           </Layout>
           <Layout>
             <div className={styles.head}>Profiles:</div>
-            <div className={styles.number}>{dashboardData.profileCount}</div>
+            <div className={styles.number} data-testid="profiles">{dashboardData.profileCount}</div>
           </Layout>
           <Layout>
             <div className={styles.head}>Profiles over 18 years old:</div>
-            <div className={styles.number}>
+            <div className={styles.number} data-testid="profilesOver18">
               {
                 dashboardData.profiles.filter(
                   (profile) => profile.birthdate > 568080000000

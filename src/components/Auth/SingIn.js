@@ -75,7 +75,6 @@ const SignIn = () => {
       dispatch(userActions.addAuth(response.token));
       dispatch(userActions.setUsername(response.user.username));
 
-      // router.push(`/${response.user._id}`);
       if (response.user.type === "admin") {
         history.push(`/profiles/`);
       } else {

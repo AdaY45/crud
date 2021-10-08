@@ -30,8 +30,6 @@ const Profiles = (props) => {
         ? `http://localhost:5000/api/profiles/${userId}`
         : user_Id !== "" && !isAdmin
         ? `http://localhost:5000/api/profiles/${user_Id}`
-        // : props.id
-        // ? `http://localhost:5000/api/profiles/${props.id}`
         : isAdmin && `http://localhost:5000/api/profiles/`;
         console.log(url)
       const profiles = await sendRequest({

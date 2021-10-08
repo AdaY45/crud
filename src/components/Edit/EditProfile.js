@@ -1,6 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useState } from "react";
-import { useHistory } from "react-router";
 import reactDom from "react-dom";
 import styles from "./EditProfile.module.scss";
 import Input from "../UI/Input/Input";
@@ -24,7 +23,6 @@ const EditProfile = (props) => {
   const user = useSelector((state) => state.user.user);
   const isAdmin = useSelector((state) => state.ui.isAdmin);
   const isAddNewProfile = useSelector((state) => state.ui.isAddNewProfile);
-  const history = useHistory();
   const { isLoading, error, sendRequest } = useHttp();
   const [selectedGender, setSelectedGender] = useState(null);
   const { id: userId } = useParams();

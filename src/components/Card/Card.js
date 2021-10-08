@@ -89,7 +89,6 @@ const Card = (props) => {
             </div>
           ))}
         </div>
-        {/* {isHovered && ( */}
         {props.buttonsShow && (
           <div className={styles.change}>
             <button className={styles.edit} onClick={editHandler}>
@@ -100,7 +99,6 @@ const Card = (props) => {
             </button>
           </div>
         )}
-        {/* )} */}
       </div>
     </Layout>
   );

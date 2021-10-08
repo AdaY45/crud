@@ -14,7 +14,6 @@ import { userActions } from "../../store/user-slice";
 const SignUp = (props) => {
   const dispatch = useDispatch();
   const history = useHistory();
-  // const users = useSelector(state => state.users.users);
   const isAdmin = useSelector((state) => state.ui.isAdmin);
   const [isChecked, setIsChecked] = useState(false);
   const auth = useSelector(state => state.user.auth);
@@ -46,12 +45,6 @@ const SignUp = (props) => {
     /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{7,15}$/.test(value)
   );
 
-  //   let formIsValid = false;
-
-  //   if (emailIsValid && passwordIsValid) {
-  //     formIsValid = true;
-  //   }
-
   const adminHandler = () => {
     setIsChecked(true);
   };
@@ -62,14 +55,6 @@ const SignUp = (props) => {
     if (!emailIsValid && !passwordIsValid && !usernameIsValid) {
       return;
     }
-
-    // const user = users.find((user) => user.email === email);
-
-    // if(user) {
-    //   setEmailExists(true);
-    // }
-
-    //dispatch(uiActions.adminHandler(isChecked));
 
     const response = await sendRequest({
       url: "http://localhost:5000/api/auth/register",
@@ -93,14 +78,7 @@ const SignUp = (props) => {
       JSON.stringify({ token: response.token, userId: response.user._id, username: response.user.username, type: response.user.type })
     );
 
-    //dispatch(uiActions.authHandler(true));
-
-    // dispatch(uiActions.adminHandler(response.user.type === "admin"));
-    // dispatch(userActions.addUser(response.user));
-    // dispatch(userActions.addAuth(response.token));
-
     history.push(`/login`);
-    //router.push(`/${response.user._id}`);
   };
 
   const emailInputStyles = emailHasErrors ? "invalid" : "";

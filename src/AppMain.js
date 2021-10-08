@@ -6,13 +6,9 @@ import styles from "./App.module.scss";
 
 function AppMain(props) {
   const isAuth = useSelector((state) => state.ui.isAuth);
-  useEffect(() => {
-    if (isAuth) {
-      //router.push("/profiles");
-    }
-  }, []);
   const dispatch = useDispatch();
   dispatch(usersActions.addUsers(props.users));
+  
   return (
     <div className={styles.container}>
       <main>

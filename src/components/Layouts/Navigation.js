@@ -21,18 +21,18 @@ const Navigation = () => {
 
   return (
     <nav className={styles.nav}>
-      <div className={styles["main-nav"]}>
+      <div data-testid="nav" className={styles["main-nav"]}>
         {isAdmin && (
           <Fragment>
-            <NavLink to="/profiles" className={styles["header-btn"]}>
+            <NavLink data-testid="toProfiles" to="/profiles" className={styles["header-btn"]}>
               <div>Profiles</div>
               <div><img src={profiles} alt="Profiles" /></div>
             </NavLink>
-            <NavLink to="/dashboard" className={styles["header-btn"]}>
+            <NavLink data-testid="toDashboard" to="/dashboard" className={styles["header-btn"]}>
               <div>Dashboard</div>
               <div><img src={dashboard} alt="Dashboard" /></div>
             </NavLink>
-            <NavLink to="/users" className={styles["header-btn"]}>
+            <NavLink data-testid="toUsers" to="/users" className={styles["header-btn"]}>
               <div>Users</div>
               <div><img src={users} alt="Users" /></div>
             </NavLink>

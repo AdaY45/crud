@@ -1,62 +1,73 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, render } from "@testing-library/react";
 import Navigation from "./Navigation";
-import { Provider } from "react-redux";
-import configureMockStrore from "redux-mock-store";
 import { Router, useLocation } from "react-router";
-import userEvent from "@testing-library/user-event";
 import { createMemoryHistory } from "history";
-import configureStore from "redux-mock-store";
-import renderer from "react-test-renderer";
+import { fireEvent } from "@testing-library/dom";
+import * as reactRedux from "react-redux";
 
-// const middlewares = [];
-// const mockStore = configureStore(middlewares);
+jest.mock("react-redux", () => ({
+  useSelector: jest.fn(),
+  useDispatch: jest.fn(),
+}));
 
 const LocationDisplay = () => {
   const location = useLocation();
   return <div data-testid="location-display">{location.pathname}</div>;
 };
 
-afterEach(cleanup);
-
 describe("Navigation component", () => {
-  //   let store;
 
-  //   beforeEach(() => {
-  //     store = mockStore({
-  //       isAuth: true,
-  //     });
-  //   });
+  beforeEach(() => {
+    useDispatchMock.mockImplementation(() => () => {});
+    useSelectorMock.mockImplementation((selector) => selector(mockStore));
+  });
+
+  afterEach(() => {
+    useDispatchMock.mockClear();
+    useSelectorMock.mockClear();
+  });
+
+  const useSelectorMock = reactRedux.useSelector;
+  const useDispatchMock = reactRedux.useDispatch;
+
+  const mockStore = {
+    ui: {
+      isAdmin: true
+    }
+  };
 
   const history = createMemoryHistory();
 
-  test("switching between links", () => {
-    const store = configureMockStrore()({
-      ui: {
-        isAuth: true,
-      },
-    });
-
-    const { getByTestId } = renderer.create(
-      <Provider store={store}>
-        <Router history={history}>
-          <Navigation />
-          <LocationDisplay />
-        </Router>
-      </Provider>
+  it("should render profiles page", () => {
+    const { getByTestId } = render(
+      <Router history={history}>
+        <Navigation />
+        <LocationDisplay />
+      </Router>
     );
+    const nav = getByTestId("nav");
+    const profileLink = getByTestId("toProfiles");
+    const dashboardLink = getByTestId("toDashboard");
+    const usersLink = getByTestId("toUsers");
+    expect(nav).toContainElement(profileLink);
+    expect(nav).toContainElement(dashboardLink);
+    expect(nav).toContainElement(usersLink);
+  })
 
-    const path = getByTestId("location-display");
+  it("should navigate to pages", () => {
+    const { getByTestId } = render(
+      <Router history={history}>
+        <Navigation />
+        <LocationDisplay />
+      </Router>
+    );
+    fireEvent.click(getByTestId("toProfiles"));
+    expect(history.location.pathname).toBe("/profiles");
 
-    const toProfiles = getByTestId("toProfiles");
-    userEvent.click(toProfiles);
-    expect(path.textContent).toBe("/profiles");
+    fireEvent.click(getByTestId("toDashboard"));
+    expect(history.location.pathname).toBe("/dashboard");
 
-    const toDashboard = getByTestId("toDashboard");
-    userEvent.click(toDashboard);
-    expect(path.textContent).toBe("/dashboard");
-
-    const toUsers = getByTestId("toUsers");
-    userEvent.click(toUsers);
-    expect(path.textContent).toBe("/users");
+    fireEvent.click(getByTestId("toUsers"));
+    expect(history.location.pathname).toBe("/users");
   });
 });

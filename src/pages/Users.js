@@ -40,9 +40,6 @@ const Users = () => {
     getUsersData();
   }, [dispatch, auth, sendRequest]);
 
-  console.log(profiles);
-  console.log(users);
-
   return (
     <section className={styles.users}>
       <h2 className="headline">Users:</h2>

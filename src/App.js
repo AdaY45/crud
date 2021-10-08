@@ -69,7 +69,6 @@ function App(props) {
     getToken();
   }, [sendRequest, dispatch]);
 
-  //add Loading so when we upload user than load profiles
   if (isAuth) {
     return (
         <MainLayout>
@@ -93,7 +92,6 @@ function App(props) {
   } else {
     return (
       <MainLayout auth={true}>
-        {/* {isLoading && <p>Loading...</p>} */}
         <Switch>
           <Route path={"/login"} exact>
             <Auth

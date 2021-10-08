@@ -54,10 +54,6 @@ const EditUser = (props) => {
     console.log(email, username);
     console.log(usernameIsValid, emailIsValid);
 
-    // if (!usernameIsValid && !emailIsValid) {
-    //   return;
-    // }
-
     const body = {
       _id: user._id,
       username: username !== '' ? username : user.username,

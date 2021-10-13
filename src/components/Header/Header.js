@@ -3,7 +3,7 @@ import styles from "./Header.module.scss";
 import avatar from "../../imgs/avatar.svg";
 import Navigation from "../Layouts/Navigation";
 
-const Header = (props) => {
+const Header = () => {
     const username = useSelector(state => state.user.username);
     return <header className={styles.header}>
         <div className={styles.info}>

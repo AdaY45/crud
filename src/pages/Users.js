@@ -13,7 +13,9 @@ const Users = () => {
   const users = useSelector((state) => state.users.users);
   const profiles = useSelector((state) => state.users.profiles);
   const dispatch = useDispatch();
+
   useEffect(() => {
+    let cleanupFunction = false;
     const getUsersData = async () => {
       const users = await sendRequest({
         url: `http://localhost:5000/api/users/`,
@@ -22,7 +24,9 @@ const Users = () => {
           "Content-Type": "application/json",
         },
       });
-      dispatch(usersActions.addUsers(users));
+      if (!cleanupFunction) {
+        dispatch(usersActions.addUsers(users));
+      }
     };
 
     const getProfilesData = async (userId) => {
@@ -33,20 +37,25 @@ const Users = () => {
           authorization: `Bearer ${auth}`,
         },
       });
-      dispatch(usersActions.addProfiles(profiles));
+      if (!cleanupFunction) {
+        dispatch(usersActions.addProfiles(profiles));
+      }
     };
 
     getProfilesData();
     getUsersData();
-  }, [dispatch, auth, sendRequest]);
+
+    return () => (cleanupFunction = true);
+  }, [auth, sendRequest]);
 
   return (
     <section className={styles.users}>
       <h2 className="headline">Users:</h2>
-      {isLoading && <Loader />}
+      {isLoading && <Loader data-testid="loading"/>}
+      {error && <div className="error">Something went wrong</div>}
       <div className={styles.cards}>
         {users.map((el) => (
-          <NavLink to={`/profile/${el._id}`} className={styles.profile}>
+          <NavLink to={`/profile/${el._id}`} className={styles.profile} >
             <Card
               key={el._id}
               id={el._id}
@@ -58,6 +67,7 @@ const Users = () => {
                 } profiles`,
               ]}
               buttonsShow={false}
+              data-testid={el.username}
             />
           </NavLink>
         ))}

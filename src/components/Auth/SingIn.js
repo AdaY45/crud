@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router";
 import useHttp from "../../hooks/use-http";
@@ -15,9 +15,7 @@ const SignIn = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const [error, setError] = useState(false);
-  const [isNotAuth, setIsNotAuth] = useState({isNotAuth: false, message: ""});
-  const isAdmin = useSelector((state) => state.ui.isAdmin);
-  const [user, setUser] = useState(null);
+  const [message, setMessage] = useState("");
   const { isLoading, errorMessage, sendRequest } = useHttp();
   const {
     value: email,
@@ -43,6 +41,7 @@ const SignIn = () => {
     if (!emailIsValid && !passwordIsValid) {
       return;
     }
+
     const response = await sendRequest({
       url: "http://localhost:5000/api/auth/login",
       method: "POST",
@@ -57,6 +56,7 @@ const SignIn = () => {
 
     if (response.hasOwnProperty("errors")) {
       setError(true);
+      setMessage(response.errors[0]);
     } else {
       localStorage.setItem(
         "userData",
@@ -91,8 +91,7 @@ const SignIn = () => {
     <Fragment>
       <h2 className={styles.head}>Sign in</h2>
       <form className={styles.form} onSubmit={onSubmit}>
-        {isNotAuth && <div className="error">{}</div>}
-        {error && <div className="error">Wrong email or password</div>}
+        {error && <div className="error">{message}</div>}
         {emailHasErrors && <p className="error">Email is not valid</p>}
         <Input
           label="Email"
@@ -100,6 +99,7 @@ const SignIn = () => {
           className={emailInputStyles}
           onChange={emailChangeHandler}
           onBlur={emailBlurHandler}
+          data-testid="email"
         />
         {passwordHasErrors && (
           <p className="error">
@@ -113,9 +113,10 @@ const SignIn = () => {
           className={passwordInputStyles}
           onChange={passwordChangeHandler}
           onBlur={passwordBlurHandler}
+          data-testid="password"
         />
 
-        <Button>Sign In</Button>
+        <Button data-testid="signin">Sign In</Button>
 
         <div className={styles.switch}>
           <p className={styles.text}>Don&apos;t have an account?</p>

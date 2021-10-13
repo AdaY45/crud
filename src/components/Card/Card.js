@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useHistory } from "react-router";
 import styles from "./Card.module.scss";
 import edit from "../../imgs/edit.svg";
 import garbage from "../../imgs/delete.svg";
@@ -14,11 +13,7 @@ const Card = (props) => {
   const profiles = useSelector((state) => state.user.profiles);
   const auth = useSelector((state) => state.user.auth);
   const { isLoading, error, sendRequest } = useHttp();
-  const history = useHistory();
   const dispatch = useDispatch();
-  const toggleHover = () => {
-    setIsHovered(!isHovered);
-  };
 
   const msToBirthdate = (ms) =>
     new Date(ms).toLocaleDateString().replaceAll(`/`, `.`);
@@ -53,7 +48,7 @@ const Card = (props) => {
     );
 
     if (confirmation) {
-      const response = await sendRequest({
+      await sendRequest({
         url: `http://localhost:5000/api/profiles/delete`,
         method: "DELETE",
         headers: {
@@ -80,7 +75,7 @@ const Card = (props) => {
 
   return (
     <Layout>
-      <div className={styles.card} onMouseEnter={toggleHover}>
+      <div className={styles.card}>
         <div className={styles["card-info"]}>
           <div className={styles.name}>{props.name}</div>
           {props.input.map((el) => (
@@ -91,10 +86,10 @@ const Card = (props) => {
         </div>
         {props.buttonsShow && (
           <div className={styles.change}>
-            <button className={styles.edit} onClick={editHandler}>
+            <button className={styles.edit} onClick={editHandler} data-testid="edit">
               <img src={edit} alt="Edit" />
             </button>
-            <button className={styles.delete} onClick={deleteHandler}>
+            <button className={styles.delete} onClick={deleteHandler} data-testid="delete">
               <img src={garbage} alt="Delete" />
             </button>
           </div>

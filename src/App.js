@@ -27,7 +27,6 @@ function App(props) {
           localStorage.getItem("userData") ||
             '{"token":null,"userId":null, "username":null,"type":null}'
         );
-        console.log(data);
         if (data && data.token) {
           if (Date.now() - data.createdAt >= 60 * 60 * 24 * 30) {
             localStorage.removeItem("userData");
@@ -46,21 +45,17 @@ function App(props) {
               type: dataToken.type,
               createdAt: dataToken.createdAt,
             };
-            console.log("dataToken: " + dataToken);
 
             localStorage.setItem("userData", JSON.stringify(dataToStore));
             dispatch(uiActions.authHandler(true));
             dispatch(userActions.addAuth(dataToken.token));
             dispatch(uiActions.adminHandler(dataToken.type === "admin"));
             dispatch(userActions.setUserId(dataToken.userId));
-            console.log(data.username);
             dispatch(userActions.setUsername(data.username));
             setIsReady(true);
           }
         }
       } catch (e) {
-        console.error(e);
-
         setIsReady(false);
       }
     };

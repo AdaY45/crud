@@ -1,6 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useState } from "react";
-import reactDom from "react-dom";
 import styles from "./EditProfile.module.scss";
 import Input from "../UI/Input/Input";
 import check from "../../imgs/check.svg";
@@ -8,16 +7,15 @@ import close from "../../imgs/close.svg";
 import Button from "../UI/Button/Button";
 import Edit from "./Edit";
 import useHttp from "../../hooks/use-http";
-import Checkbox from "../UI/Checkbox/Checkbox";
 import useInput from "../../hooks/use-input";
 import { useParams } from "react-router";
 import { uiActions } from "../../store/ui-slice";
 import { userActions } from "../../store/user-slice";
 
-const EditProfile = (props) => {
+const EditProfile = () => {
   const dispatch = useDispatch();
   const [isGenderValid, setIsGenderValid] = useState(true);
-  const selectedUserId = useSelector(state => state.user.selectedUserId);
+  const selectedUserId = useSelector((state) => state.user.selectedUserId);
   const auth = useSelector((state) => state.user.auth);
   const profile = useSelector((state) => state.user.profile);
   const user = useSelector((state) => state.user.user);
@@ -83,7 +81,7 @@ const EditProfile = (props) => {
           gender: selectedGender,
           birthdate,
           city,
-          owner: selectedUserId
+          owner: selectedUserId,
         },
       });
     } else {
@@ -120,7 +118,7 @@ const EditProfile = (props) => {
         authorization: `Bearer ${auth}`,
       },
     });
-    
+
     dispatch(userActions.setSelectedUserId(null));
     dispatch(userActions.addProfiles(profiles));
     dispatch(uiActions.modalClose("profile"));
@@ -134,7 +132,7 @@ const EditProfile = (props) => {
 
   const birthdateInputStyles = birthdateHasErrors ? "invalid" : "";
 
-  return reactDom.createPortal(
+  return (
     <Edit>
       <form className={styles.form} onSubmit={submitHandler}>
         {nameHasErrors && (
@@ -150,12 +148,13 @@ const EditProfile = (props) => {
           onChange={nameChangeHandler}
           onBlur={isAddNewProfile && nameBlurHandler}
           className={nameInputStyles}
+          data-testid="name"
         />
         {!isGenderValid && (
           <div className="error">This field should not be empty</div>
         )}
         <div className={styles["form-control"]}>
-          <label htmlFor={props.input}>gender</label>
+          <label htmlFor="gender">gender</label>
           <div className={styles.options}>
             <input
               type="radio"
@@ -164,6 +163,7 @@ const EditProfile = (props) => {
               className={styles.radio}
               onChange={genderHandler}
               defaultChecked={!isAddNewProfile && profile.gender === "male"}
+              data-testid="gender-male"
             />
             <label htmlFor="male" className={styles["gender-label"]}>
               male
@@ -175,6 +175,7 @@ const EditProfile = (props) => {
               className={styles.radio}
               onChange={genderHandler}
               defaultChecked={!isAddNewProfile && profile.gender === "female"}
+              data-testid="gender-female"
             />
             <label htmlFor="female" className={styles["gender-label"]}>
               female
@@ -194,6 +195,7 @@ const EditProfile = (props) => {
           onChange={cityChangeHandler}
           onBlur={isAddNewProfile && cityBlurHandler}
           className={cityInputStyles}
+          data-testid="city"
         />
         {birthdateHasErrors && (
           <div className="error">This field should not be empty</div>
@@ -216,18 +218,18 @@ const EditProfile = (props) => {
           onChange={birthdateChangeHandler}
           onBlur={isAddNewProfile && birthdateBlurHandler}
           className={birthdateInputStyles}
+          data-testid="birthdate"
         />
         <div className={styles["submit-btn"]}>
-          <Button>
+          <Button data-testid="submit">
             <img src={check} alt="Check" />
           </Button>
-          <Button onClick={closeHandler}>
+          <Button onClick={closeHandler} data-testid="close">
             <img src={close} alt="Close" />
           </Button>
         </div>
       </form>
-    </Edit>,
-    document.getElementById("modal")
+    </Edit>
   );
 };
 

@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useState } from "react";
+import { useSelector } from "react-redux";
 import { useHistory } from "react-router";
 import Input from "../UI/Input/Input";
 import Button from "../UI/Button/Button";
@@ -8,17 +8,14 @@ import useInput from "../../hooks/use-input";
 import useHttp from "../../hooks/use-http";
 import { NavLink } from "react-router-dom";
 import styles from "./SignUp.module.scss";
-import {uiActions} from "../../store/ui-slice";
-import { userActions } from "../../store/user-slice";
 
-const SignUp = (props) => {
-  const dispatch = useDispatch();
+const SignUp = () => {
   const history = useHistory();
-  const isAdmin = useSelector((state) => state.ui.isAdmin);
   const [isChecked, setIsChecked] = useState(false);
-  const auth = useSelector(state => state.user.auth);
+  const auth = useSelector((state) => state.user.auth);
   const { isLoading, error, sendRequest: sendRequest } = useHttp();
   const [emailExists, setEmailExists] = useState(false);
+  const [userExists, setUserExists] = useState(false);
   const {
     value: username,
     isValid: usernameIsValid,
@@ -71,14 +68,20 @@ const SignUp = (props) => {
       },
     });
 
-    console.log(response);
+    if (response.errors) {
+      setUserExists(true);
+    } else {
+      localStorage.setItem(
+        "userData",
+        JSON.stringify({
+          userId: response.user._id,
+          username: response.user.username,
+          type: response.user.type,
+        })
+      );
 
-    localStorage.setItem(
-      "userData",
-      JSON.stringify({ token: response.token, userId: response.user._id, username: response.user.username, type: response.user.type })
-    );
-
-    history.push(`/login`);
+      history.push(`/login`);
+    }
   };
 
   const emailInputStyles = emailHasErrors ? "invalid" : "";
@@ -90,11 +93,10 @@ const SignUp = (props) => {
   return (
     <Fragment>
       <h2 className={styles.head}>Create your account</h2>
+      {userExists && <p className="error">User already exists</p>}
       <form className={styles.form} onSubmit={onSubmit}>
         {emailExists && (
-          <div className="error">
-            User with such email already exists.
-          </div>
+          <div className="error">User with such email already exists.</div>
         )}
         {usernameHasErrors && (
           <p className="error">Username should not be empty</p>
@@ -105,6 +107,7 @@ const SignUp = (props) => {
           className={usernameInputStyles}
           onChange={usernameChangeHandler}
           onBlur={usernameBlurHandler}
+          data-testid="username"
         />
         {emailHasErrors && <p className="error">Email is not valid</p>}
         <Input
@@ -113,6 +116,7 @@ const SignUp = (props) => {
           className={emailInputStyles}
           onChange={emailChangeHandler}
           onBlur={emailBlurHandler}
+          data-testid="email"
         />
         {passwordHasErrors && (
           <p className="error">
@@ -126,6 +130,7 @@ const SignUp = (props) => {
           className={passwordInputStyles}
           onChange={passwordChangeHandler}
           onBlur={passwordBlurHandler}
+          data-testid="password"
         />
 
         <div className={styles["form-control"]}>
@@ -133,11 +138,12 @@ const SignUp = (props) => {
             onChange={adminHandler}
             type="checkbox"
             className={styles.checkbox}
+            data-testid="checkbox"
           />
           <label htmlFor="admin">is admin</label>
         </div>
 
-        <Button>Sign up</Button>
+        <Button data-testid="signup">Sign up</Button>
 
         <div className={styles.switch}>
           <p className={styles.text}>Already have an account?</p>

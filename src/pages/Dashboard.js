@@ -31,9 +31,9 @@ const Dashboard = () => {
   return (
     <section className={styles.dashboard}>
       <h2 className={styles.headline}>Dashboard:</h2>
-      {error && <div className="error">Something went wrong</div>}
+      {error || dashboardData.errors && <div className="error">Something went wrong</div>}
       {isLoading && <Loader />}
-      {isReady && (
+      {isReady && !error && !dashboardData.errors && (
         <div className={styles.cards}>
           <Layout>
             <div className={styles.head}>Users:</div>

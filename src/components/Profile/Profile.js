@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { NavLink } from "react-router-dom";
 import { useHistory } from "react-router";
 import styles from "./Profile.module.scss";
 import edit from "../../imgs/edit.svg";
@@ -14,9 +13,8 @@ import { useParams } from "react-router";
 const User = () => {
   const { id: userId } = useParams();
   const history = useHistory();
-  const profiles = useSelector((state) => state.user.profiles);
   const users = useSelector((state) => state.users.users);
-  const user = users.find((user) => user._id === userId);  
+  const user = users.find((user) => user._id === userId);
   const auth = useSelector((state) => state.user.auth);
   const dispatch = useDispatch();
   const { isLoading, error, sendRequest } = useHttp();
@@ -25,24 +23,21 @@ const User = () => {
     dispatch(userActions.setSelectedUserId(userId));
   }, [dispatch, userId]);
 
-  const msToBirthdate = (ms) =>
-  new Date(ms).toLocaleDateString().replaceAll(`/`, `.`);
-
   const editHandler = () => {
     dispatch(uiActions.addNewProfilePress(false));
 
-    const user = users.find(user => user._id === userId);
+    const user = users.find((user) => user._id === userId);
 
     dispatch(userActions.addUser(user));
-    
 
     dispatch(uiActions.modalOpen("user"));
   };
 
   const deleteHandler = async () => {
     const confirmation = window.confirm(
-      "Are you sure you want to delete the profile?"
+      "Are you sure you want to delete the user?"
     );
+    console.log(auth);
 
     if (confirmation) {
       await sendRequest({
@@ -59,7 +54,7 @@ const User = () => {
       });
     }
 
-      history.push('/users');
+    history.push("/users");
   };
 
   return (
@@ -69,16 +64,16 @@ const User = () => {
         <div className={styles.text}>{user.email}</div>
         <div className={styles.type}>{user.type}</div>
         <div className={styles.change}>
-          <button onClick={editHandler}>
+          <button onClick={editHandler} data-testid="edit">
             <img src={edit} alt="Edit" />
           </button>
-          <button onClick={deleteHandler}>
+          <button onClick={deleteHandler} data-testid="delete">
             <img src={garbage} alt="Delete" />
           </button>
         </div>
       </div>
 
-      <Profiles/>
+      <Profiles />
     </section>
   );
 };

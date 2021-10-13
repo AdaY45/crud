@@ -40,7 +40,7 @@ const Navigation = () => {
         )}
       </div>
 
-      <button onClick={logoutHandler} className={styles["logout-btn"]}>
+      <button onClick={logoutHandler} className={styles["logout-btn"]} data-testid="logout">
         Log out
       </button>
     </nav>

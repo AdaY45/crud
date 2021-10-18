@@ -57,11 +57,11 @@ const EditProfile = () => {
     event.preventDefault();
 
 
-    if (selectedGender === null) {
+    if (selectedGender === null && isAddNewProfile) {
       setIsGenderValid(false);
     }
 
-    if (isAddNewProfile && !nameIsValid && !cityIsValid && !birthdateIsValid) {
+    if (!nameIsValid && !cityIsValid && !birthdateIsValid) {
       return;
     }
 
@@ -133,7 +133,7 @@ const EditProfile = () => {
     <Edit>
       <form className={styles.form} onSubmit={submitHandler}>
         {nameHasErrors && (
-          <div className="error">This field should not be empty</div>
+          <div className="error">The name field should not be empty</div>
         )}
         <Input
           label="name"
@@ -147,7 +147,7 @@ const EditProfile = () => {
           data-testid="name"
         />
         {!isGenderValid && (
-          <div className="error">This field should not be empty</div>
+          <div className="error">The gender field should not be empty</div>
         )}
         <div className={styles["form-control"]}>
           <label htmlFor="gender">gender</label>
@@ -179,7 +179,7 @@ const EditProfile = () => {
           </div>
         </div>
         {cityHasErrors && (
-          <div className="error">The field should not be empty</div>
+          <div className="error">The city field should not be empty</div>
         )}
         <Input
           label="city"
@@ -193,7 +193,7 @@ const EditProfile = () => {
           data-testid="city"
         />
         {birthdateHasErrors && (
-          <div className="error">This field should not be empty</div>
+          <div className="error">The birthdate field should not be empty</div>
         )}
         <Input
           label="birthdate"

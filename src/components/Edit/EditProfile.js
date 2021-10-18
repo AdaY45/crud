@@ -29,7 +29,6 @@ const EditProfile = () => {
     isValid: nameIsValid,
     hasErrors: nameHasErrors,
     valueChangeHandler: nameChangeHandler,
-    inputBlurHandler: nameBlurHandler,
   } = useInput((value) => value.trim() !== "");
 
   const {
@@ -37,7 +36,6 @@ const EditProfile = () => {
     isValid: cityIsValid,
     hasErrors: cityHasErrors,
     valueChangeHandler: cityChangeHandler,
-    inputBlurHandler: cityBlurHandler,
   } = useInput((value) => value.trim() !== "");
 
   const {
@@ -45,7 +43,6 @@ const EditProfile = () => {
     isValid: birthdateIsValid,
     hasErrors: birthdateHasErrors,
     valueChangeHandler: birthdateChangeHandler,
-    inputBlurHandler: birthdateBlurHandler,
   } = useInput((value) => value.trim() !== "");
 
   const closeHandler = () => {
@@ -59,17 +56,17 @@ const EditProfile = () => {
   const submitHandler = async (event) => {
     event.preventDefault();
 
+
     if (selectedGender === null) {
       setIsGenderValid(false);
-      return;
     }
 
-    if (!nameIsValid && !cityIsValid && !birthdateIsValid) {
+    if (isAddNewProfile && !nameIsValid && !cityIsValid && !birthdateIsValid) {
       return;
     }
 
     if (isAddNewProfile) {
-      await sendRequest({
+      const response = await sendRequest({
         url: `http://localhost:5000/api/profiles/create`,
         method: "POST",
         headers: {
@@ -93,7 +90,7 @@ const EditProfile = () => {
         city: city ? city : profile.city,
       };
 
-      await sendRequest({
+      const response = await sendRequest({
         url: `http://localhost:5000/api/profiles/edit`,
         method: "PATCH",
         headers: {
@@ -146,7 +143,6 @@ const EditProfile = () => {
             defaultValue: !isAddNewProfile ? profile.name : "",
           }}
           onChange={nameChangeHandler}
-          onBlur={isAddNewProfile && nameBlurHandler}
           className={nameInputStyles}
           data-testid="name"
         />
@@ -193,7 +189,6 @@ const EditProfile = () => {
             defaultValue: !isAddNewProfile ? profile.city : "",
           }}
           onChange={cityChangeHandler}
-          onBlur={isAddNewProfile && cityBlurHandler}
           className={cityInputStyles}
           data-testid="city"
         />
@@ -216,7 +211,6 @@ const EditProfile = () => {
               : "",
           }}
           onChange={birthdateChangeHandler}
-          onBlur={isAddNewProfile && birthdateBlurHandler}
           className={birthdateInputStyles}
           data-testid="birthdate"
         />

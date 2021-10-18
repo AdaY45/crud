@@ -14,21 +14,25 @@ const User = () => {
   const { id: userId } = useParams();
   const history = useHistory();
   const users = useSelector((state) => state.users.users);
-  const user = users.find((user) => user._id === userId);
+  //const user = users.find((user) => user._id === userId);
+  //const [userInfo, setUserInfo] = useState(null);
+  const user = useSelector((state) => state.user.user);
   const auth = useSelector((state) => state.user.auth);
   const dispatch = useDispatch();
   const { isLoading, error, sendRequest } = useHttp();
 
   useEffect(() => {
     dispatch(userActions.setSelectedUserId(userId));
+    const user = users.find((user) => user._id === userId);
+    dispatch(userActions.addUser(user));
   }, [dispatch, userId]);
 
   const editHandler = () => {
     dispatch(uiActions.addNewProfilePress(false));
 
-    const user = users.find((user) => user._id === userId);
+    //const user = users.find((user) => user._id === userId);
 
-    dispatch(userActions.addUser(user));
+    //dispatch(userActions.addUser(user));
 
     dispatch(uiActions.modalOpen("user"));
   };

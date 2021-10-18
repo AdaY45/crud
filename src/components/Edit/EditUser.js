@@ -65,7 +65,7 @@ const EditUser = () => {
       body: body,
     });
 
-    dispatch(userActions.addUser(response));
+    dispatch(userActions.addUser(body));
     dispatch(usersActions.addUser(response));
     dispatch(uiActions.modalClose("user"));
     history.push(`/profile/${user._id}`);
